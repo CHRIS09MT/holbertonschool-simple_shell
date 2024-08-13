@@ -8,4 +8,6 @@
 #include <string.h>
 #include <sys/wait.h>
 
+char **tokenizeLine(char **argv);
+
 #endif
