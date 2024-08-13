@@ -1,0 +1,1 @@
+Initial readme file for Holberton's simple_shell project
