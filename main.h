@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/wait.h>
 
-char **handle_memory_error(char **tokens, size_t count);
-char **tokenizeLine(char **argv);
+char **tokenizeLine(char *str);
 
 #endif

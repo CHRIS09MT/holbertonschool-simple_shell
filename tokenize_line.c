@@ -1,48 +1,47 @@
 #include "main.h"
 
 /**
- * tokenizeLine - Function to tokenize a line
- * @argv: A pointer to the command-line arguments array
- * Return: A pointer to the tokenized line
+ * tokenizeLine - Tokenize a line of text into words.
+ * @str: The input text string containing the line to tokenize.
+ * Return: An array of pointers to strings (tokens), or NULL if that fails.
  */
 
-char **tokenizeLine(char **argv)
+char **tokenizeLine(char *str)
 {
-	if (argv[0] == NULL || argv == NULL)
+	if (str == NULL)
 		return (NULL);
 
-	char *chain = argv[0];
-	const char delimiter[] = " ";
-	char *token, **tokens = NULL;
-	size_t count = 0, j = 0;
+	size_t size = 10;
+	char **tokens = NULL;
+	char *token = NULL;
+	int i = 0, j = 0;
 
-	token = strtok(chain, delimiter);
+	tokens = malloc(size * sizeof(char *));
+	if (tokens == NULL)
+		return (NULL);
 
-	while (token != NULL)
+	token = strtok(str, " ");
+	if (token != NULL)
+		tokens[i++] = strdup(token);
+
+	while ((token = strtok(NULL, " ")) != NULL)
 	{
-		tokens = realloc(tokens, sizeof(char *) * (count + 1));
-		if (tokens == NULL)
+		if (i >= size)
 		{
-			for (; j < count; j++)
-				free(tokens[j]);
-			return (NULL);
+			size *= 2;
+			tokens = realloc(tokens, size * sizeof(char *));
+			if (tokens == NULL)
+			{
+				for (j = 0; j < i; j++)
+					free(tokens[j]);
+				free(tokens);
+				return (NULL);
+			}
 		}
-
-		tokens[count] = strdup(token);
-		if (tokens[count] == NULL)
-		{
-			for (; j < count; j++)
-				free(tokens[j]);
-			return (NULL);
-		}
-
-		count++;
-		token = strtok(NULL, delimiter);
+		tokens[i++] = strdup(token);
 	}
 
-	tokens = realloc(tokens, sizeof(char *) * (count + 1));
-	if (tokens != NULL)
-		tokens[count] = NULL;
+	tokens[i] = NULL;
 
 	return (tokens);
 }
