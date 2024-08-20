@@ -5,36 +5,68 @@
  * @str: The input text string containing the line to tokenize.
  * Return: An array of pointers to strings (tokens), or NULL if that fails.
  */
+
 char **tokenizeLine(char *str)
 {
-	if (str == NULL)
-		return (NULL);
+    if (str == NULL)
+        return NULL;
 
-	size_t size = 10;
-	char **tokens = malloc(size * sizeof(char *));
-	char *token = NULL;
-	int i = 0, j;
+    int i = 0, j = 0;
+    size_t size = 10;
+    char **tokens = NULL, *token = NULL, *p = NULL;
 
-	if (tokens == NULL)
-		return (NULL);
+    tokens = malloc(size * sizeof(char *));
+    if (tokens == NULL)
+        return (NULL);
 
-	while ((token = strtok(str, " ")))
-	{
-		str = NULL;
-		if (token[0] == '-' && token[1] != '\0')
-		{
-			for (j = 1; token[j] != '\0'; j++)
-			{
-				if (i >= size)
-					tokens = realloc(tokens, (size *= 2) * sizeof(char *));
-				if (tokens == NULL)
-					return (NULL);
-				tokens[i++] = strndup(&token[j], 1);
-			}
-		}
-		else
-			tokens[i++] = strdup(token);
-	}
-	tokens[i] = NULL;
-	return (tokens);
+    token = strtok(str, " ");
+    if (token != NULL)
+    {
+        tokens[i++] = strdup(token);
+
+        while ((token = strtok(NULL, " ")) != NULL)
+        {
+            if (token[0] == '-')
+            {
+                for (p = token + 1; *p != '\0'; p++)
+                {
+                    if (i >= size)
+                    {
+                        size *= 2;
+                        tokens = realloc(tokens, size * sizeof(char *));
+                        if (tokens == NULL)
+                        {
+                            for (j = 0; j < i; j++)
+                                free(tokens[j]);
+                            free(tokens);
+                            return (NULL);
+                        }
+                    }
+                    tokens[i] = malloc(2 * sizeof(char));
+                    tokens[i][0] = *p;
+                    tokens[i][1] = '\0';
+                    i++;
+                }
+            }
+            else
+            {
+                if (i >= size)
+                {
+                    size *= 2;
+                    tokens = realloc(tokens, size * sizeof(char *));
+                    if (tokens == NULL)
+                    {
+                        for (j = 0; j < i; j++)
+                            free(tokens[j]);
+                        free(tokens);
+                        return (NULL);
+                    }
+                }
+                tokens[i++] = strdup(token);
+            }
+        }
+    }
+
+    tokens[i] = NULL;
+    return (tokens);
 }
