@@ -12,7 +12,7 @@ int printEnv(char **tokens)
 	(void) tokens;
 
 	for (; environ[i] != NULL; i++)
-                printf("%s\n", environ[i]);
+		printf("%s\n", environ[i]);
 
 	return (1);
 }
