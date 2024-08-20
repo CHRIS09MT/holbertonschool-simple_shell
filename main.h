@@ -9,5 +9,6 @@
 #include <sys/wait.h>
 
 char **tokenizeLine(char *str);
+int printEnv();
 
 #endif
