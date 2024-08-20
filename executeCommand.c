@@ -6,6 +6,26 @@
 #include <sys/wait.h>
 
 /**
+ * _getenv - mimics getenv()
+ * name: the name of the environment variable
+ * Return: the part of the env variable after the = sign or null if failed
+*/
+char *_getenv(const char *name)
+{
+    extern char **environ;
+    char **env = NULL;
+    for (env = environ; *env != NULL; env++)
+    {
+        if (strncmp(*env, name, strlen(name)) == 0 
+        && (*env)[strlen(name)] == '=')
+        {
+            return (*env + strlen(name) + 1);
+        }
+    }
+    return (NULL);
+    }
+
+/**
  * executeCommand - Executes a non-built-in command using execve and PATH
  * @tokens: The array of arguments
  * Return: 1 if the command was executed successfully, 0 if the command was not found
@@ -18,7 +38,7 @@ int executeCommand(char **tokens)
     char *path, *path_copy, *dir, *full_path;
     size_t cmd_len, dir_len;
 
-    path = getenv("PATH");
+    path = _getenv("PATH");
     if (path == NULL)
     {
         perror("getenv");
