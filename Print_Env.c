@@ -5,13 +5,14 @@
  * Return: 0 on success
  */
 
-int printEnv()
+int printEnv(char **tokens)
 {
 	extern char **environ;
 	int i = 0;
+	(void) tokens;
 
 	for (; environ[i] != NULL; i++)
                 printf("%s\n", environ[i]);
 
-	return (0);
+	return (1);
 }

@@ -8,12 +8,12 @@
 
 char **tokenizeLine(char *str)
 {
-    if (str == NULL)
-        return NULL;
-
     int i = 0, j = 0;
     size_t size = 10;
     char **tokens = NULL, *token = NULL, *p = NULL;
+
+    if (str == NULL)
+        return NULL;
 
     tokens = malloc(size * sizeof(char *));
     if (tokens == NULL)
@@ -30,7 +30,7 @@ char **tokenizeLine(char *str)
             {
                 for (p = token + 1; *p != '\0'; p++)
                 {
-                    if (i >= size)
+                    if ((size_t) i >= size)
                     {
                         size *= 2;
                         tokens = realloc(tokens, size * sizeof(char *));
@@ -50,7 +50,7 @@ char **tokenizeLine(char *str)
             }
             else
             {
-                if (i >= size)
+                if ((size_t) i >= size)
                 {
                     size *= 2;
                     tokens = realloc(tokens, size * sizeof(char *));

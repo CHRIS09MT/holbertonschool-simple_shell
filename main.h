@@ -8,7 +8,15 @@
 #include <string.h>
 #include <sys/wait.h>
 
+typedef struct builtIn_s
+{
+    char *name;
+    int (*handler)(char **tokens);
+} builtIn;
+
+void freeTokens(char **tokens);
 char **tokenizeLine(char *str);
-int printEnv();
+int exitShell(char **tokens);
+int printEnv(char **tokens);
 
 #endif
