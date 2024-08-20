@@ -12,23 +12,25 @@
 */
 char *_getenv(const char *name)
 {
-    extern char **environ;
-    char **env = NULL;
-    for (env = environ; *env != NULL; env++)
-    {
-        if (strncmp(*env, name, strlen(name)) == 0 
-        && (*env)[strlen(name)] == '=')
-        {
-            return (*env + strlen(name) + 1);
-        }
-    }
-    return (NULL);
+	extern char **environ;
+	char **env = NULL;
+
+	for (env = environ; *env != NULL; env++)
+	{
+		if (strncmp(*env, name, strlen(name)) == 0
+		&& (*env)[strlen(name)] == '=')
+		{
+		return (*env + strlen(name) + 1);
+		}
+	}
+	return (NULL);
 }
 
 /**
  * executeCommand - Executes a non-built-in command using execve and PATH
  * @tokens: The array of arguments
- * Return: 1 if the command was executed successfully, 0 if the command was not found
+ * Return: 1 if the command was executed successfully,
+ * 0 if the command was not found
  */
 int executeCommand(char **tokens)
 {
@@ -39,7 +41,7 @@ int executeCommand(char **tokens)
 	size_t cmd_len, dir_len;
 
 	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
-    || strncmp(tokens[0], "../", 3) == 0)
+	|| strncmp(tokens[0], "../", 3) == 0)
 	{
 		if (access(tokens[0], X_OK) == 0)
 		{
@@ -47,7 +49,7 @@ int executeCommand(char **tokens)
 			if (pid == -1)
 			{
 				perror("fork failed");
-				return 0;
+				return (0);
 			}
 			else if (pid == 0)
 			{
@@ -59,12 +61,11 @@ int executeCommand(char **tokens)
 			}
 			else
 			{
-				do
-				{
+				do {
 					waitpid(pid, &status, WUNTRACED);
 				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 			}
-			return 1;
+			return (1);
 		}
 	}
 
@@ -72,14 +73,14 @@ int executeCommand(char **tokens)
 	if (path == NULL)
 	{
 		perror("_getenv");
-		return 0;
+		return (0);
 	}
 
 	path_copy = strdup(path);
 	if (path_copy == NULL)
 	{
 		perror("strdup");
-		return 0;
+		return (0);
 	}
 
 	cmd_len = strlen(tokens[0]);
@@ -93,7 +94,7 @@ int executeCommand(char **tokens)
 		{
 			perror("malloc");
 			free(path_copy);
-			return 0;
+			return (0);
 		}
 
 		strcpy(full_path, dir);
@@ -108,7 +109,7 @@ int executeCommand(char **tokens)
 				perror("fork failed");
 				free(full_path);
 				free(path_copy);
-				return 0;
+				return (0);
 			}
 			else if (pid == 0)
 			{
@@ -120,15 +121,14 @@ int executeCommand(char **tokens)
 			}
 			else
 			{
-				do
-				{
+				do {
 					waitpid(pid, &status, WUNTRACED);
 				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 			}
 
 			free(full_path);
 			free(path_copy);
-			return 1;
+			return (1);
 		}
 
 		free(full_path);
@@ -136,5 +136,5 @@ int executeCommand(char **tokens)
 	}
 
 	free(path_copy);
-	return 0;
+	return (0);
 }
