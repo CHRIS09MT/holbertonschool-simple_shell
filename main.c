@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 		{"env", printEnv},
 		{NULL, NULL}};
 
-	(void) argv; /* quitar cuando implementemos modo no-interactivo */
+	(void) argv; /* Quitar cuando implementemos el modo no-interactivo */
 	if (argc != 1)
 		interactive = 0;
 
@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 	{
 		commandFound = 0;
 		printf("SimpleShell $ ");
+
 		read = getline(&line, &len, stdin);
 		if (read == -1)
 		{
@@ -72,10 +73,14 @@ int main(int argc, char **argv)
 		{
 			commandFound = executeCommand(tokens);
 			if (!commandFound)
+			{
 				printf("%s: Command does not exist.\n", tokens[0]);
+			}
 		}
+
 		freeTokens(tokens);
 	}
+
 	free(line);
 	return (0);
 }
