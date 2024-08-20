@@ -22,9 +22,10 @@ int main(int argc, char **argv)
 		{"env", printEnv},
 		{NULL, NULL}};
 
-	(void) argv; /*quitar cuando implementemos modo no-interactivo*/
+	(void) argv; /* Remove when non-interactive mode is implemented */
 	if (argc != 1)
 		interactive = 0;
+
 	while (interactive)
 	{
 		commandFound = 0;
@@ -35,14 +36,17 @@ int main(int argc, char **argv)
 			perror("getline");
 			break;
 		}
+
 		if (line[read - 1] == '\n')
 			line[read - 1] = '\0';
+
 		tokens = tokenizeLine(line);
 		if (tokens == NULL || tokens[0] == NULL)
 		{
 			freeTokens(tokens);
 			continue;
 		}
+
 		for (i = 0; handlers[i].name != NULL; i++)
 		{
 			if (strcmp(handlers[i].name, tokens[0]) == 0)
@@ -57,8 +61,13 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
+
 		if (!commandFound)
-			printf("%s: Command does not exist.\n", tokens[0]);
+		{
+			commandFound = executeCommand(tokens);
+			if (!commandFound)
+				printf("%s: Command does not exist.\n", tokens[0]);
+		}
 		freeTokens(tokens);
 	}
 	free(line);

@@ -1,8 +1,9 @@
 #include "main.h"
 
 /**
- * printEnv Function to print environment variables.
+ * printEnv - Function to print environment variables.
  * Return: 0 on success
+ * @tokens: Unused parameter. This function does not use this argument.
  */
 
 int printEnv(char **tokens)

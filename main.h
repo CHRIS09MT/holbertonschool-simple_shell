@@ -22,6 +22,7 @@ typedef struct builtIn_s
 
 void freeTokens(char **tokens);
 char **tokenizeLine(char *str);
+int executeCommand(char **tokens);
 int exitShell(char **tokens);
 int printEnv(char **tokens);
 
