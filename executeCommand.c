@@ -38,7 +38,8 @@ int executeCommand(char **tokens)
 	char *path, *path_copy, *dir, *full_path;
 	size_t cmd_len, dir_len;
 
-	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0 || strncmp(tokens[0], "../", 3) == 0)
+	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
+    || strncmp(tokens[0], "../", 3) == 0)
 	{
 		if (access(tokens[0], X_OK) == 0)
 		{
