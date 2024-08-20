@@ -1,6 +1,8 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "main.h"
 
 /**
@@ -22,7 +24,7 @@ int main(int argc, char **argv)
 		{"env", printEnv},
 		{NULL, NULL}};
 
-	(void) argv; /* Remove when non-interactive mode is implemented */
+	(void) argv; /* quitar cuando implementemos modo no-interactivo */
 	if (argc != 1)
 		interactive = 0;
 
@@ -33,8 +35,12 @@ int main(int argc, char **argv)
 		read = getline(&line, &len, stdin);
 		if (read == -1)
 		{
-			perror("getline");
-			break;
+			if (errno == 0)
+			{
+				break;
+			}
+			perror("getline failed");
+			continue;
 		}
 
 		if (line[read - 1] == '\n')
