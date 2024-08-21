@@ -71,7 +71,12 @@ int main(void)
         {
             commandFound = executeCommand(tokens);
             if (!commandFound)
-                fprintf(stderr, "%s: Command does not exist.\n", tokens[0]);
+            {
+                fprintf(stderr, "./hsh: 1: %s: not found\n", tokens[0]);
+                freeTokens(tokens);
+                free(line);
+                exit(127);
+            }
         }
 
         freeTokens(tokens);
