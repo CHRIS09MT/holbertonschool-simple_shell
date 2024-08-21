@@ -13,73 +13,72 @@
  */
 int main(void)
 {
-	int i;
-	int interactive = 1, commandFound = 0;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	char **tokens = NULL;
-	builtIn handlers[] = {
-		{"exit", exitShell},
-		{"env", printEnv},
-		{NULL, NULL}};
+    int i;
+    int interactive = 1, commandFound = 0;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    char **tokens = NULL;
+    builtIn handlers[] = {
+        {"exit", exitShell},
+        {"env", printEnv},
+        {NULL, NULL}};
 
-	if (!isatty(STDIN_FILENO))
-		interactive = 0;
+    if (!isatty(STDIN_FILENO))
+        interactive = 0;
 
-	while (1)
-	{
-		commandFound = 0;
+    while (1)
+    {
+        commandFound = 0;
+        if (interactive)
+            printf("SimpleShell $ ");
 
-		if (interactive)
-		{
-			printf("SimpleShell $ ");
-		}
+        read = getline(&line, &len, stdin);
+        if (read == -1)
+        {
+            if (feof(stdin) || errno == 0)
+                break;
+            perror("getline failed");
+            continue;
+        }
 
-		read = getline(&line, &len, stdin);
-		if (read == -1)
-		{
-			if (errno == 0)
-			{
-				break;
-			}
-			perror("getline failed");
-			continue;
-		}
+        if (line[read - 1] == '\n')
+            line[read - 1] = '\0';
 
-		if (line[read - 1] == '\n')
-			line[read - 1] = '\0';
+        tokens = tokenizeLine(line);
+        if (tokens == NULL || tokens[0] == NULL)
+        {
+            freeTokens(tokens);
+            continue;
+        }
+		
+        for (i = 0; handlers[i].name != NULL; i++)
+        {
+            if (strcmp(handlers[i].name, tokens[0]) == 0)
+            {
+                commandFound = 1;
+                if (handlers[i].handler(tokens) == 0)
+                {
+                    freeTokens(tokens);
+                    free(line);
+                    return (0);
+                }
+                break;
+            }
+        }
 
-		tokens = tokenizeLine(line);
-		if (tokens == NULL || tokens[0] == NULL)
-		{
-			freeTokens(tokens);
-			continue;
-		}
-		for (i = 0; handlers[i].name != NULL; i++)
-		{
-			if (strcmp(handlers[i].name, tokens[0]) == 0)
-			{
-				commandFound = 1;
-				if (handlers[i].handler(tokens) == 0)
-				{
-					freeTokens(tokens);
-					free(line);
-					return (0);
-				}
-				break;
-			}
-		}
-		if (!commandFound)
-		{
-			commandFound = executeCommand(tokens);
-			if (!commandFound)
-				fprintf(stderr, "%s: Command does not exist.\n", tokens[0]);
-		}
-		freeTokens(tokens);
-		if (!interactive)
-			break;
-	}
-	free(line);
-	return (0);
+        if (!commandFound)
+        {
+            commandFound = executeCommand(tokens);
+            if (!commandFound)
+                fprintf(stderr, "%s: Command does not exist.\n", tokens[0]);
+        }
+
+        freeTokens(tokens);
+        if (!interactive && feof(stdin))
+            break;
+    }
+
+    free(line);
+    return (0);
 }
