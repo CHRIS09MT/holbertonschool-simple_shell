@@ -42,9 +42,10 @@ char **tokenizeLine(char *str)
 							return (NULL);
 						}
 					}
-					tokens[i] = malloc(2 * sizeof(char));
-					tokens[i][0] = *p;
-					tokens[i][1] = '\0';
+					tokens[i] = malloc(3 * sizeof(char));
+					tokens[i][0] = '-';
+					tokens[i][1] = *p;
+					tokens[i][2] = '\0';
 					i++;
 				}
 			}
