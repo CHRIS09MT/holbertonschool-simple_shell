@@ -1,7 +1,7 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <errno.h>
 #include "main.h"
 
@@ -11,7 +11,7 @@
  * @argv: the argument vector
  * Return: 0 if successful
  */
-int main(int argc, char **argv)
+int main(void)
 {
 	int i;
 	int interactive = 1, commandFound = 0;
@@ -24,14 +24,17 @@ int main(int argc, char **argv)
 		{"env", printEnv},
 		{NULL, NULL}};
 
-	(void) argv; /* Quitar cuando implementemos el modo no-interactivo */
-	if (argc != 1)
+	if (!isatty(STDIN_FILENO))
 		interactive = 0;
 
-	while (interactive)
+	while (1)
 	{
 		commandFound = 0;
-		printf("SimpleShell $ ");
+
+		if (interactive)
+		{
+			printf("SimpleShell $ ");
+		}
 
 		read = getline(&line, &len, stdin);
 		if (read == -1)
@@ -53,7 +56,6 @@ int main(int argc, char **argv)
 			freeTokens(tokens);
 			continue;
 		}
-
 		for (i = 0; handlers[i].name != NULL; i++)
 		{
 			if (strcmp(handlers[i].name, tokens[0]) == 0)
@@ -68,19 +70,16 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
-
 		if (!commandFound)
 		{
 			commandFound = executeCommand(tokens);
 			if (!commandFound)
-			{
-				printf("%s: Command does not exist.\n", tokens[0]);
-			}
+				fprintf(stderr, "%s: Command does not exist.\n", tokens[0]);
 		}
-
 		freeTokens(tokens);
+		if (!interactive)
+			break;
 	}
-
 	free(line);
 	return (0);
 }
