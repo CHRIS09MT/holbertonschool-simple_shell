@@ -71,10 +71,7 @@ int executeCommand(char **tokens)
 
 	path = _getenv("PATH");
 	if (path == NULL)
-	{
-		perror("_getenv");
 		return (0);
-	}
 
 	path_copy = strdup(path);
 	if (path_copy == NULL)
