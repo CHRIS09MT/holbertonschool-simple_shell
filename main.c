@@ -36,7 +36,7 @@ int main(void)
         read = getline(&line, &len, stdin);
         if (read == -1)
         {
-            if (feof(stdin) || errno == 0)
+            if (!interactive || errno == 0)
                 break;
             perror("getline failed");
             continue;
@@ -51,7 +51,7 @@ int main(void)
             freeTokens(tokens);
             continue;
         }
-		
+
         for (i = 0; handlers[i].name != NULL; i++)
         {
             if (strcmp(handlers[i].name, tokens[0]) == 0)
@@ -75,10 +75,9 @@ int main(void)
         }
 
         freeTokens(tokens);
-        if (!interactive && feof(stdin))
-            break;
     }
 
     free(line);
     return (0);
 }
+
