@@ -20,6 +20,7 @@ typedef struct builtIn_s
 	int (*handler)(char **tokens, char *line);
 } builtIn;
 
+extern char **environ;
 int _feof(int fd);
 void freeTokens(char **tokens);
 char **tokenizeLine(char *str);

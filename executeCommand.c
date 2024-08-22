@@ -1,18 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "main.h"
 
 /**
  * _getenv - mimics getenv()
- * name: the name of the environment variable
+ * @name: the name of the environment variable
  * Return: the part of the env variable after the = sign or null if failed
 */
 char *_getenv(const char *name)
 {
-	extern char **environ;
 	char **env = NULL;
 
 	for (env = environ; *env != NULL; env++)
@@ -20,68 +14,33 @@ char *_getenv(const char *name)
 		if (strncmp(*env, name, strlen(name)) == 0
 		&& (*env)[strlen(name)] == '=')
 		{
-		return (*env + strlen(name) + 1);
+			return (*env + strlen(name) + 1);
 		}
 	}
 	return (NULL);
 }
 
 /**
- * executeCommand - Executes a non-built-in command using execve and PATH
- * @tokens: The array of arguments
- * Return: 1 if the command was executed successfully,
- * 0 if the command was not found
+ * _getFullPath - Constructs the full path of a command.
+ * @tokens: The array of arguments, where the first token is the command name.
+ * Return: A pointer to the full path of the command, or NULL if not found.
  */
-int executeCommand(char **tokens)
+
+char *_getFullPath(char **tokens)
 {
-	extern char **environ;
-	pid_t pid;
-	int status;
 	char *path, *path_copy, *dir, *full_path;
 	size_t cmd_len, dir_len;
 
-	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
-	|| strncmp(tokens[0], "../", 3) == 0)
-	{
-		if (access(tokens[0], X_OK) == 0)
-		{
-			pid = fork();
-			if (pid == -1)
-			{
-				perror("fork failed");
-				return (0);
-			}
-			else if (pid == 0)
-			{
-				if (execve(tokens[0], tokens, environ) == -1)
-				{
-					perror("execve failed");
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				do {
-					waitpid(pid, &status, WUNTRACED);
-				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-			}
-			return (1);
-		}
-	}
-
 	path = _getenv("PATH");
 	if (path == NULL)
-		return (0);
-
+		return (NULL);
 	path_copy = strdup(path);
 	if (path_copy == NULL)
 	{
 		perror("strdup");
-		return (0);
+		return (NULL);
 	}
-
 	cmd_len = strlen(tokens[0]);
-
 	dir = strtok(path_copy, ":");
 	while (dir != NULL)
 	{
@@ -91,7 +50,7 @@ int executeCommand(char **tokens)
 		{
 			perror("malloc");
 			free(path_copy);
-			return (0);
+			return (NULL);
 		}
 
 		strcpy(full_path, dir);
@@ -100,38 +59,63 @@ int executeCommand(char **tokens)
 
 		if (access(full_path, X_OK) == 0)
 		{
-			pid = fork();
-			if (pid == -1)
-			{
-				perror("fork failed");
-				free(full_path);
-				free(path_copy);
-				return (0);
-			}
-			else if (pid == 0)
-			{
-				if (execve(full_path, tokens, environ) == -1)
-				{
-					perror("execve failed");
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				do {
-					waitpid(pid, &status, WUNTRACED);
-				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-			}
-
-			free(full_path);
 			free(path_copy);
-			return (1);
+			return (full_path);
 		}
-
 		free(full_path);
 		dir = strtok(NULL, ":");
 	}
 
 	free(path_copy);
-	return (0);
+	return (NULL);
+}
+
+/**
+ * executeCommand - Executes a non-built-in command using execve and PATH
+ * @tokens: The array of arguments
+ * Return: 1 if the command was executed successfully,
+ * 0 if the command was not found
+ */
+
+int executeCommand(char **tokens)
+{
+	pid_t pid;
+	int status;
+	char *full_path;
+
+	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
+	|| strncmp(tokens[0], "../", 3) == 0)
+	{
+		full_path = tokens[0];
+	}
+	else
+	{
+		full_path = _getFullPath(tokens);
+		if (full_path == NULL)
+		return (0);
+	}
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork failed");
+		if (full_path != tokens[0])
+			free(full_path);
+		return (0);
+	} else if (pid == 0)
+	{
+		if (execve(full_path, tokens, environ) == -1)
+		{
+			perror("execve failed");
+			exit(EXIT_FAILURE);
+		}
+	} else
+	{
+		do {
+		waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+	if (full_path != tokens[0])
+		free(full_path);
+	return (1);
 }

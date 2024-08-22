@@ -1,7 +1,5 @@
 #include "main.h"
 
-extern char **environ;
-
 /**
  * printEnv - Function to print environment variables.
  * @tokens: Unused parameter. This function does not use this argument.
