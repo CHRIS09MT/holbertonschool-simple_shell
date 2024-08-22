@@ -27,24 +27,11 @@ int main(void)
     if (!isatty(STDIN_FILENO))
         interactive = 0;
 
-<<<<<<< HEAD
     while (1)
     {
         commandFound = 0;
         if (interactive)
-            printf("SimpleShell $ ");
-=======
-	while (interactive)
-	{
-		commandFound = 0;
-		printf("SimpleShell$ ");
-		read = getline(&line, &len, stdin);
-		if (read == -1)
-		{
-			perror("getline");
-			break;
-		}
->>>>>>> chris-mt09
+            printf("SimpleShell$ ");
 
         read = getline(&line, &len, stdin);
         if (read == -1)
