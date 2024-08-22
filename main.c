@@ -73,9 +73,12 @@ int main(void)
             if (!commandFound)
             {
                 fprintf(stderr, "./hsh: 1: %s: not found\n", tokens[0]);
-                freeTokens(tokens);
-                free(line);
-                exit(127);
+                if (!interactive)
+                {
+                    freeTokens(tokens);
+                    free(line);
+                    exit(127);
+                }
             }
         }
 
