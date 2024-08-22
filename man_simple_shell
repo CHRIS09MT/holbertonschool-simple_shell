@@ -1,0 +1,131 @@
+.TH simple_shell 1/8/2024
+
+.SH NAME
+simple_shell \- A simple UNIX command interpreter
+
+.SH SYNOPSIS
+.B simple_shell
+[\fBfile\fP]
+
+.SH DESCRIPTION
+.B simple_shell
+is a lightweight command-line interpreter that reads commands from either a file or standard input and executes them.
+
+.SH USAGE
+The shell reads commands typed by the user and executes them. It supports various built-in commands such as \fBexit\fP, \fBenv\fP, and also allows executing external programs like \fBls\fP or \fBpwd\fP.
+
+.SS Interactive Mode
+In interactive mode, \fBsimple_shell\fP displays a prompt (\fBSimpleShell$\fP) and waits for the user to input commands. The commands are executed, and then the shell returns to display the prompt.
+
+.SS Non-Interactive Mode
+In non-interactive mode, \fBsimple_shell\fP reads and executes commands from a file or input stream. Once the commands are executed, the shell exits.
+
+.SH COMMANDS
+The following commands are supported by the \fBsimple_shell\fP:
+
+.TP
+\fBexit\fP
+Exits the shell.
+
+.TP
+\fBenv\fP
+Prints the current environment variables.
+
+.TP
+\fBpwd\fP
+Prints the current working directory.
+
+.SH SIGNALS
+.B simple_shell
+handles the following signals:
+
+.TP
+.B SIGINT
+(Ctrl + C) The shell ignores this signal and does not terminate.
+
+.SH EXAMPLES
+Here are a few examples of using \fBsimple_shell\fP:
+
+.SS Example 1: Listing files in the current directory
+.TP
+.B Input:
+\fBSimpleShell$ ls\fP
+
+.B Output:
+\fB[File1] [File2] [Directory1]\fP
+
+.TP
+_Brief Description:_
+Shows all files in the current directory.
+
+.SS Example 2: Clearing the terminal screen
+.TP
+.B Before Execution:
+\fBSimpleShell$ ls\fP
+\fB[File1]\fP
+\fB[File2]\fP
+\fB[Directory1]\fP
+\fBSimpleShell$\fP
+
+.B Input:
+\fBSimpleShell$ clear\fP
+
+.B Output:
+\fBSimpleShell$\fP
+
+_Brief Description:_
+The screen is cleared, and only the prompt is visible.
+
+.SS Example 3: Deleting a file from the current directory
+.TP
+.B Before Execution:
+\fBSimpleShell$ ls\fP
+\fB[File1]\fP
+\fB[File2]\fP
+\fB[Directory1]\fP
+\fBSimpleShell$\fP
+
+.B Input:
+\fBSimpleShell$ rm [File2]\fP
+
+.B Output:
+\fBSimpleShell$ rm [File2]\fP
+\fBSimpleShell$ ls\fP
+\fB[File1]\fP
+\fB[Directory1]\fP
+\fBSimpleShell$\fP
+
+_Brief Description:_
+Deletes a file from the current directory.
+
+.SS Example 4: Printing the current working directory
+.TP
+.B Input:
+\fBSimpleShell$ pwd\fP
+
+.B Output:
+\fB[Current-Path-User]\fP
+
+_Brief Description:_
+This command prints the current working directory path.
+
+.SS Example 5: Exiting the shell
+.TP
+.B Input:
+\fBSimpleShell$ exit\fP
+
+.B Output:
+\fB(The shell exits and the terminal session ends)\fP
+
+.B Alternative Input:
+(Press Ctrl + D)
+
+.B Output:
+\fB(The shell exits and the terminal session ends)\fP
+
+_Brief Description:_
+The `exit` command or pressing `Ctrl + D` will terminate the shell session and close the program.
+
+.SH AUTHORS
+Christopher Morales Torres <christophermoralestorres06@gmail.com>
+Juan Sebastian Aramburo <juansebastianaramburo@gmail.com>
