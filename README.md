@@ -193,7 +193,7 @@ _(Deletes a file from the current directory)._
 1. __Move the manual to the appropriate directory 📂:__
 
     ```
-    sudo mv man_Simple_Shell /usr/share/man/man1/simple_shell.1
+    sudo mv man_simple_shell /usr/share/man/man1/simple_shell.1
     ```
 
 2. __Update the man database 🔄:__
