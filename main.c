@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 	while (interactive)
 	{
 		commandFound = 0;
-		printf("SimpleShell $ ");
+		printf("SimpleShell$ ");
 		read = getline(&line, &len, stdin);
 		if (read == -1)
 		{
