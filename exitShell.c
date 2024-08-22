@@ -1,13 +1,19 @@
+#include <stdlib.h>
 #include "main.h"
 
 /**
- * exitShell - just returns 0 to signal that the shell should exit
- * @tokens: unused, the signature of all built-ins
- * Return: always 0 to signal shell should exit
+ * exitShell - exits the shell with a given status
+ * @tokens: array of tokens, where tokens[1] may contain the exit status
+ * @line: the line variable from main
+ * Return: this function does not return, it exits the program
  */
-
-int exitShell(char **tokens)
+int exitShell(char **tokens, char *line)
 {
-	(void)tokens;
-	return (0);
+	int status = 0;
+
+	if (tokens[1] != NULL)
+		status = atoi(tokens[1]);
+	freeTokens(tokens);
+	free(line);
+	exit(status);
 }

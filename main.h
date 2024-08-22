@@ -17,14 +17,14 @@
 typedef struct builtIn_s
 {
 	char *name;
-	int (*handler)(char **tokens);
+	int (*handler)(char **tokens, char *line);
 } builtIn;
 
 int _feof(int fd);
 void freeTokens(char **tokens);
 char **tokenizeLine(char *str);
 int executeCommand(char **tokens);
-int exitShell(char **tokens);
-int printEnv(char **tokens);
+int exitShell(char **tokens, char *line);
+int printEnv(char **tokens, char *line);
 
 #endif

@@ -1,16 +1,19 @@
 #include "main.h"
 
+extern char **environ;
+
 /**
  * printEnv - Function to print environment variables.
- * Return: 0 on success
  * @tokens: Unused parameter. This function does not use this argument.
+ * @line: the line variable from main
+ * Return: always 1
  */
 
-int printEnv(char **tokens)
+int printEnv(char **tokens, char *line)
 {
-	extern char **environ;
 	int i = 0;
 	(void) tokens;
+	(void) line;
 
 	for (; environ[i] != NULL; i++)
 		printf("%s\n", environ[i]);
