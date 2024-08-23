@@ -21,11 +21,15 @@ typedef struct builtIn_s
 } builtIn;
 
 extern char **environ;
+
 int _feof(int fd);
 void freeTokens(char **tokens);
 char **tokenizeLine(char *str);
 int executeCommand(char **tokens);
 int exitShell(char **tokens, char *line);
 int printEnv(char **tokens, char *line);
+char *_getenv(const char *name);
+char *_getFullPath(char **tokens);
+char **handleToken(char **tokens, int *i, size_t *size, char *token)
 
 #endif
