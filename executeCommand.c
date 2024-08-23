@@ -13,9 +13,7 @@ char *_getenv(const char *name)
 	{
 		if (strncmp(*env, name, strlen(name)) == 0
 		&& (*env)[strlen(name)] == '=')
-		{
-		return (*env + strlen(name) + 1);
-		}
+			return (*env + strlen(name) + 1);
 	}
 	return (NULL);
 }
@@ -26,7 +24,6 @@ char *_getenv(const char *name)
  * @tokens: An array of argument strings for the command.
  * Return: 1 if the command was executed successfully.
  */
-
 static int execute(const char *path, char **tokens)
 {
 	pid_t pid;
@@ -56,15 +53,50 @@ static int execute(const char *path, char **tokens)
 }
 
 /**
+ * findAndExecuteCommand - Tries to find and execute a command
+ * @dir: The directory to search in.
+ * @tokens: The array of arguments.
+ * @cmd_len: The length of the command name.
+ * @path_copy: The copy of the PATH environment variable.
+ * Return: 1 if the command was executed successfully, 0 if not.
+ */
+int findAndExecuteCommand(char *dir,
+	char **tokens, size_t cmd_len, char *path_copy)
+{
+	char *full_path = malloc(strlen(dir) + cmd_len + 2);
+	int result;
+
+	if (!full_path)
+	{
+		perror("malloc");
+		free(path_copy);
+		return (0);
+	}
+
+	snprintf(full_path, strlen(dir) + cmd_len + 2, "%s/%s", dir, tokens[0]);
+
+	if (access(full_path, X_OK) == 0)
+	{
+		free(path_copy);
+		result = execute(full_path, tokens);
+		free(full_path);
+		return (result);
+	}
+
+	free(full_path);
+	return (0);
+}
+
+/**
  * executeCommand - Executes a non-built-in command using execve and PATH
  * @tokens: The array of arguments
  * Return: 1 if the command was executed successfully,
  * 0 if the command was not found
  */
-
 int executeCommand(char **tokens)
 {
-	char *path, *path_copy, *dir, *full_path;
+	int result;
+	char *path, *path_copy, *dir;
 	size_t cmd_len;
 
 	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
@@ -87,19 +119,9 @@ int executeCommand(char **tokens)
 	dir = strtok(path_copy, ":");
 	while (dir)
 	{
-		full_path = malloc(strlen(dir) + cmd_len + 2);
-		if (!full_path)
-		{
-			perror("malloc");
-			free(path_copy);
-			return (0); }
-		snprintf(full_path, strlen(dir) + cmd_len + 2, "%s/%s", dir, tokens[0]);
-		if (access(full_path, X_OK) == 0)
-		{
-			free(path_copy);
-			free(full_path);
-			return (execute(full_path, tokens)); }
-		free(full_path);
+		result = findAndExecuteCommand(dir, tokens, cmd_len, path_copy);
+		if (result)
+			return (result);
 		dir = strtok(NULL, ":");
 	}
 	free(path_copy);
