@@ -21,110 +21,87 @@ char *_getenv(const char *name)
 }
 
 /**
+ * execute - Forks a child process to execute a command.
+ * @path: The full path to the command to be executed.
+ * @tokens: An array of argument strings for the command.
+ * Return: 1 if the command was executed successfully.
+ */
+
+static int execute(const char *path, char **tokens)
+{
+	pid_t pid;
+	int status;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork failed");
+		return (0);
+	}
+	if (pid == 0)
+	{
+		if (execve(path, tokens, environ) == -1)
+		{
+			perror("execve failed");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		do {
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+	return (1);
+}
+
+/**
  * executeCommand - Executes a non-built-in command using execve and PATH
  * @tokens: The array of arguments
  * Return: 1 if the command was executed successfully,
  * 0 if the command was not found
  */
+
 int executeCommand(char **tokens)
 {
-	pid_t pid;
-	int status;
 	char *path, *path_copy, *dir, *full_path;
-	size_t cmd_len, dir_len;
+	size_t cmd_len;
 
 	if (tokens[0][0] == '/' || strncmp(tokens[0], "./", 2) == 0
 	|| strncmp(tokens[0], "../", 3) == 0)
 	{
 		if (access(tokens[0], X_OK) == 0)
-		{
-			pid = fork();
-			if (pid == -1)
-			{
-				perror("fork failed");
-				return (0);
-			}
-			else if (pid == 0)
-			{
-				if (execve(tokens[0], tokens, environ) == -1)
-				{
-					perror("execve failed");
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				do {
-					waitpid(pid, &status, WUNTRACED);
-				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-			}
-			return (1);
-		}
-	}
-
-	path = _getenv("PATH");
-	if (path == NULL)
+			return (execute(tokens[0], tokens));
 		return (0);
-
+	}
+	path = _getenv("PATH");
+	if (!path)
+		return (0);
 	path_copy = strdup(path);
-	if (path_copy == NULL)
+	if (!path_copy)
 	{
 		perror("strdup");
 		return (0);
 	}
-
 	cmd_len = strlen(tokens[0]);
-
 	dir = strtok(path_copy, ":");
-	while (dir != NULL)
+	while (dir)
 	{
-		dir_len = strlen(dir);
-		full_path = malloc(dir_len + cmd_len + 2);
-		if (full_path == NULL)
+		full_path = malloc(strlen(dir) + cmd_len + 2);
+		if (!full_path)
 		{
 			perror("malloc");
 			free(path_copy);
-			return (0);
-		}
-
-		strcpy(full_path, dir);
-		strcat(full_path, "/");
-		strcat(full_path, tokens[0]);
-
+			return (0); }
+		snprintf(full_path, strlen(dir) + cmd_len + 2, "%s/%s", dir, tokens[0]);
 		if (access(full_path, X_OK) == 0)
 		{
-			pid = fork();
-			if (pid == -1)
-			{
-				perror("fork failed");
-				free(full_path);
-				free(path_copy);
-				return (0);
-			}
-			else if (pid == 0)
-			{
-				if (execve(full_path, tokens, environ) == -1)
-				{
-					perror("execve failed");
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				do {
-					waitpid(pid, &status, WUNTRACED);
-				} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-			}
-
-			free(full_path);
 			free(path_copy);
-			return (1);
-		}
-
+			free(full_path);
+			return (execute(full_path, tokens)); }
 		free(full_path);
 		dir = strtok(NULL, ":");
 	}
-
 	free(path_copy);
 	return (0);
 }
