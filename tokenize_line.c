@@ -9,60 +9,59 @@
 
 char **tokenizeLine(char *str)
 {
-	int i = 0;
+	int i = 0, j = 0;
 	size_t size = 10;
-	char **tokens = NULL, *token, *p, **new_tokens;
+	char **tokens = NULL, *token = NULL, *p = NULL;
 
-	if (!str)
+	if (str == NULL)
 		return (NULL);
 
 	tokens = malloc(size * sizeof(char *));
-	if (!tokens)
+	if (tokens == NULL)
 		return (NULL);
+
 	token = strtok(str, " ");
-	while (token)
+	while (token != NULL)
 	{
-		if (i >= (int)size)
+		if ((size_t) i >= size)
 		{
 			size *= 2;
-			new_tokens = realloc(tokens, size * sizeof(char *));
-			if (!new_tokens)
+			tokens = realloc(tokens, size * sizeof(char *));
+			if (tokens == NULL)
 			{
-				while (i > 0) free(tokens[--i]);
+				for (j = 0; j < i; j++)
+					free(tokens[j]);
 				free(tokens);
 				return (NULL);
 			}
-			tokens = new_tokens;
 		}
-		if (*token == '-')
+
+		if (token[0] == '-')
 		{
-			for (p = token + 1; *p; p++, i++)
+			for (p = token + 1; *p != '\0'; p++)
 			{
-				tokens[i] = malloc(3);
-				if (!tokens[i])
+				tokens[i] = malloc(3 * sizeof(char));
+				if (tokens[i] == NULL)
 				{
-					while (i > 0) free(tokens[--i]);
+					for (j = 0; j < i; j++)
+						free(tokens[j]);
 					free(tokens);
 					return (NULL);
 				}
 				tokens[i][0] = '-';
 				tokens[i][1] = *p;
 				tokens[i][2] = '\0';
+				i++;
 			}
 		}
 		else
 		{
-			tokens[i] = strdup(token);
-			if (!tokens[i])
-			{
-				while (i > 0) free(tokens[--i]);
-				free(tokens);
-				return (NULL);
-			}
-			i++;
+			tokens[i++] = strdup(token);
 		}
+
 		token = strtok(NULL, " ");
 	}
+
 	tokens[i] = NULL;
 	return (tokens);
 }
